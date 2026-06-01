@@ -1,0 +1,315 @@
+---
+title: "Week 3"
+author: "Deo Rupali Vilas"
+date: "2026-05-26"
+output: html_document
+---
+
+#Task 1
+```{r}
+data("iris")
+View(iris)
+```
+
+```{r}
+
+library(datasets)
+library(dplyr)
+
+head(iris)
+str(iris)
+
+
+dim(iris)
+
+colnames(iris)
+
+sapply(iris, class)
+
+summary(iris)
+
+cat("Dataset Description:\n")
+cat("The Iris dataset contains measurements of iris flowers.\n")
+cat("It includes Sepal Length, Sepal Width, Petal Length, Petal Width, and Species.\n")
+cat("The dataset represents three species of iris flowers:\n")
+cat("Setosa, Versicolor, and Virginica.\n")
+
+cat("\nFeatures of Dataset:\n")
+cat("1. Sepal.Length\n")
+cat("2. Sepal.Width\n")
+cat("3. Petal.Length\n")
+cat("4. Petal.Width\n")
+cat("5. Species\n")
+
+cat("\nKey Skills Used:\n")
+cat("• Data Understanding\n")
+cat("• Exploratory Thinking\n")
+cat("• Dataset Structure Analysis\n")
+cat("• Data Type Identification\n")
+```
+#Task 2
+
+```{r}
+colSums(is.na(iris))
+
+iris_clean=na.omit(iris)
+
+sum(duplicated(iris_clean))
+
+iris_clean=iris_clean%>%distinct()
+
+str(iris_clean)
+
+iris_clean$Species <- as.factor(iris_clean$Species)
+
+summary(iris_clean)
+
+cat("Number of Rows:", nrow(iris_clean), "\n")
+cat("Number of Columns:", ncol(iris_clean), "\n")
+
+cat("\nKey Insights:\n")
+cat("1. No missing values were found in the Iris dataset.\n")
+cat("2. Duplicate records were checked and removed if present.\n")
+cat("3. Data types were verified and formatted correctly.\n")
+cat("4. The dataset is now clean and ready for analysis.\n")
+
+cat("\nKey Skills Used:\n")
+cat("• Data Preprocessing\n")
+cat("• Data Cleaning\n")
+cat("• Data Quality Management\n")
+cat("• Missing Value Handling\n")
+
+```
+
+#Task 3
+```{r}
+
+colMeans(iris[,1:4])
+
+apply(iris[,1:4], 2, median)
+
+apply(iris[,1:4], 2, sd)
+
+table(iris$Species)
+
+library(ggplot2)
+# Sepal Length Distribution
+ggplot(iris, aes(x = Sepal.Length, fill = Species)) +
+  geom_histogram(binwidth = 0.3) +
+  ggtitle("Distribution of Sepal Length")
+
+# Petal Length vs Petal Width
+ggplot(iris, aes(x = Petal.Length,
+                 y = Petal.Width,
+                 color = Species)) +
+  geom_point(size = 3) +
+  ggtitle("Petal Length vs Petal Width")
+
+# Boxplot for Outlier Detection
+ggplot(iris, aes(x = Species,
+                 y = Sepal.Width,
+                 fill = Species)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of Sepal Width")
+
+#Correlation Analysis
+
+cor(iris[,1:4])
+
+#Outlier Detection
+
+boxplot(iris$Sepal.Length,
+        main = "Outlier Detection for Sepal Length")
+
+cat("Key Findings:\n")
+
+cat("1. Petal Length and Petal Width show strong positive correlation.\n")
+
+cat("2. Setosa species is clearly separated from other species.\n")
+
+cat("3. Some outliers are present in Sepal Width.\n")
+
+cat("4. Most flower measurements follow a consistent distribution.\n")
+
+cat("\nKey Skills Used:\n")
+
+cat("• Statistical Thinking\n")
+cat("• Data Analysis\n")
+cat("• Exploratory Data Analysis (EDA)\n")
+cat("• Trend and Outlier Identification\n")
+```
+#task 4
+```{r}
+#
+ggplot(iris,
+       aes(x = Petal.Length,
+           y = Petal.Width,
+           color = Species)) +
+  geom_point(size = 3) +
+  ggtitle("Petal Length vs Petal Width") +
+  xlab("Petal Length") +
+  ylab("Petal Width")
+
+#
+ggplot(iris,
+       aes(x = Sepal.Length,
+           fill = Species)) +
+  geom_histogram(binwidth = 0.3) +
+  ggtitle("Distribution of Sepal Length") +
+  xlab("Sepal Length") +
+  ylab("Frequency")
+
+#
+ggplot(iris,
+       aes(x = Species,
+           y = Sepal.Width,
+           fill = Species)) +
+  geom_boxplot() +
+  ggtitle("Boxplot of Sepal Width") +
+  xlab("Species") +
+  ylab("Sepal Width")
+
+# 
+ggplot(iris,
+       aes(x = Species,
+           fill = Species)) +
+  geom_bar() +
+  ggtitle("Count of Iris Species") +
+  xlab("Species") +
+  ylab("Count")
+
+cat("Key Insights:\n")
+
+cat("1. Setosa species has smaller petal measurements compared to others.\n")
+
+cat("2. Virginica species generally has larger flower dimensions.\n")
+
+cat("3. Petal Length and Petal Width show a strong relationship.\n")
+
+cat("4. Boxplots help identify variation and possible outliers in the dataset.\n")
+
+cat("\nKey Skills Used:\n")
+
+cat("• Data Visualization\n")
+cat("• Storytelling with Data\n")
+cat("• Graph Interpretation\n")
+cat("• Trend Analysis\n")
+```
+#task 5
+
+```{r}
+library(caret)
+set.seed(123)
+
+train_index <- createDataPartition(iris$Species,
+                                   p = 0.7,
+                                   list = FALSE)
+
+train_data <- iris[train_index, ]
+test_data <- iris[-train_index, ]
+
+library(rpart)
+
+model <- rpart(Species ~ .,
+               data = train_data,
+               method = "class")
+
+# View Model
+print(model)
+
+predictions <- predict(model,
+                       test_data,
+                       type = "class")
+
+confusionMatrix(predictions,
+                test_data$Species)
+
+ggplot(iris,
+       aes(x = Petal.Length,
+           y = Petal.Width,
+           color = Species)) +
+  geom_point(size = 3) +
+  ggtitle("Species Classification using Petal Features")
+
+cat("Key Insights:\n")
+
+cat("1. Classification models help predict flower species based on measurements.\n")
+
+cat("2. Petal Length and Petal Width are important predictors.\n")
+
+cat("3. Setosa species is easily distinguishable from others.\n")
+
+cat("4. Machine learning improves pattern recognition and prediction accuracy.\n")
+
+cat("\nConclusion:\n")
+
+cat("The classification model was successfully developed using the Iris dataset.\n")
+
+cat("The model predicts flower species using sepal and petal measurements.\n")
+
+cat("This task demonstrates the application of basic machine learning concepts for predictive analysis.\n")
+
+cat("\nKey Skills Used:\n")
+
+cat("• Basic Machine Learning Concepts\n")
+cat("• Classification Modeling\n")
+cat("• Model Understanding\n")
+cat("• Predictive Analysis\n")
+```
+```{r}
+library(GGally)
+
+ggpairs(iris,
+        aes(color = Species))
+```
+```{r}
+ggplot(iris,
+       aes(x = Petal.Length,
+           fill = Species)) +
+  geom_density(alpha = 0.5) +
+  ggtitle("Density Plot of Petal Length")
+```
+```{r}
+ggplot(iris,
+       aes(x = Species,
+           y = Petal.Length,
+           fill = Species)) +
+  geom_violin() +
+  ggtitle("Violin Plot of Petal Length")
+
+```
+```{r}
+library(corrplot)
+
+cor_matrix <- cor(iris[,1:4])
+
+corrplot(cor_matrix,
+         method = "color")
+```
+
+```{r}
+library(rpart.plot)
+
+rpart.plot(model)
+
+
+```
+
+```{r}
+ggplot(test_data,
+       aes(x = Petal.Length,
+           y = Petal.Width,
+           color = predictions)) +
+  geom_point(size = 3) +
+  ggtitle("Predicted Species Classification")
+```
+
+```{r}
+library(caret)
+
+conf_matrix <- confusionMatrix(predictions,
+                               test_data$Species)
+
+conf_matrix
+```
+

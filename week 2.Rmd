@@ -1,0 +1,158 @@
+---
+title: "week 2"
+author: "Deo Rupali Vilas"
+date: "2026-05-26"
+output:
+  word_document: default
+  html_document: default
+---
+
+#Task 1
+```{r}
+# Load Dataset
+data <- read.csv("C:/M.Sc/DecodaLabs-internship/Rural_and_Urban_Population_and_Decadal_Change.csv")
+
+head(data)
+
+str(data)
+
+dim(data)
+```
+
+```{r}
+
+dim(data)        
+nrow(data)       
+ncol(data)       
+
+colnames(data)
+
+str(data)
+
+summary(data)
+
+colSums(is.na(data))
+
+cat("Number of Rows:", nrow(data), "\n")
+cat("Number of Columns:", ncol(data), "\n")
+
+sapply(data, class)
+```
+
+#Task 2
+```{r}
+
+cat("Missing Values in Each Column:\n")
+colSums(is.na(data))
+
+numeric_cols <- sapply(data, is.numeric)
+
+for(i in names(data[numeric_cols])) {
+  data[is.na(data[, i]), i] <- mean(data[, i], na.rm = TRUE)
+}
+
+cat("Number of Duplicate Rows:",
+    sum(duplicated(data)), "\n")
+
+data <- unique(data)
+
+str(data)
+
+data$Districts <- as.character(data$Districts)
+
+cat("Missing Values After Cleaning:\n")
+colSums(is.na(data))
+
+cat("Final Number of Rows:", nrow(data), "\n")
+cat("Final Number of Columns:", ncol(data), "\n")
+
+write.csv(data,
+          "cleaned_dataset.csv",
+          row.names = FALSE)
+
+cat("Data cleaning completed successfully!")
+```
+
+#Task 3
+```{r}
+
+summary(data)
+
+numeric_cols <- sapply(data, is.numeric)
+
+mean_values <- sapply(data[, numeric_cols], mean, na.rm = TRUE)
+median_values <- sapply(data[, numeric_cols], median, na.rm = TRUE)
+sd_values <- sapply(data[, numeric_cols], sd, na.rm = TRUE)
+
+cat("Mean Values:\n")
+print(mean_values)
+
+cat("Median Values:\n")
+print(median_values)
+
+cat("Standard Deviations:\n")
+print(sd_values)
+
+boxplot(data[, numeric_cols],
+        main = "Boxplots for Numeric Variables",
+        las = 2)
+
+cor_matrix <- cor(data[, numeric_cols])
+print(cor_matrix)
+
+corrplot::corrplot(cor_matrix,
+                   method = "color",
+                   tl.cex = 0.7)
+
+top_pop <- data[order(-data$Population.2011_Total_Rural.Urban), ]
+
+head(top_pop[, c("Districts",
+                 "Population.2011_Total_Rural.Urban")], 10)
+
+hist(data$Population.2011_Total_Rural.Urban,
+     main = "Distribution of Total Population",
+     xlab = "Population")
+
+cat("EDA Completed Successfully")
+```
+
+#Task 4
+```{r}
+
+
+top10 <- data[order(-data$Population.2011_Total_Rural.Urban), ][1:10, ]
+
+barplot(top10$Population.2011_Total_Rural.Urban,
+        names.arg = top10$Districts,
+        las = 2,
+        main = "Top 10 Districts by Total Population",
+        ylab = "Population")
+
+hist(data$Population.2011_Total_Rural.Urban,
+     main = "Distribution of Total Population",
+     xlab = "Population",
+     breaks = 10)
+
+boxplot(data$Population.2011_Total_Rural.Urban,
+        main = "Boxplot of Total Population",
+        ylab = "Population")
+
+plot(data$Population.2011_Rural_Total,
+     data$Population.2011_Urban_Total,
+     main = "Rural vs Urban Population",
+     xlab = "Rural Population",
+     ylab = "Urban Population",
+     pch = 19)
+
+abline(lm(Population.2011_Urban_Total ~
+          Population.2011_Rural_Total,
+          data = data))
+
+rural_total <- sum(data$Population.2011_Rural_Total)
+urban_total <- sum(data$Population.2011_Urban_Total)
+
+pie(c(rural_total, urban_total),
+    labels = c("Rural", "Urban"),
+    main = "Share of Rural and Urban Population")
+```
+
